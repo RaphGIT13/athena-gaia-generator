@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Athena Gaia Description Generator (Web-Powered)</title>
+  <style>
+    body {
+      font-family: Georgia, serif;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+      background: #fdfaf5;
+      color: #333;
+    }
+    label {
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.5rem 0 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      padding: 0.75rem 1.5rem;
+      background-color: #8b5e3c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      margin-right: 0.5rem;
+    }
+    #output {
+      margin-top: 2rem;
+      background: #fff9f0;
+      padding: 1rem;
+      border-left: 4px solid #8b5e3c;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>Greek-Inspired Product Description Generator (Web-Powered)</h1>
+
+  <label for="seo">SEO Keyword</label>
+  <input type="text" id="seo" placeholder="e.g. handmade Greek jewelry" />
+
+  <label for="tone">Tone</label>
+  <select id="tone">
+    <option value="Joan">Joan</option>
+    <option value="Pete">Pete</option>
+    <option value="Mythical">Mythical & Story-Driven</option>
+    <option value="Earthy">Minimal & Earthy</option>
+  </select>
+
+  <label for="title">Product Title</label>
+  <input type="text" id="title" placeholder="e.g. Aegean Light Pendant" />
+
+  <label for="designer">Designer Name</label>
+  <select id="designer">
+    <option value="Al'Oro">Al'Oro</option>
+    <option value="Evangelatos">Evangelatos</option>
+    <option value="Gerochristo">Gerochristo</option>
+    <option value="Kouzoupis">Kouzoupis</option>
+    <option value="Maramenos & Pateras">Maramenos & Pateras</option>
+    <option value="Stilvi">Stilvi</option>
+    <option value="Yianni">Yianni</option>
+  </select>
+
+  <label for="material">Material</label>
+  <select id="material">
+    <option value="14k Gold">14k Gold</option>
+    <option value="925 Sterling Silver">925 Sterling Silver</option>
+    <option value="18k Gold">18k Gold</option>
+    <option value="Gold Plating">Gold Plating</option>
+  </select>
+
+  <label for="gemstones">Gemstones</label>
+  <input type="text" id="gemstones" placeholder="e.g. Blue Topaz, White Diamond" />
+
+  <button onclick="generateWithChatGPT()">Generate with ChatGPT</button>
+  <div id="output"></div>
+
+  <script>
+    async function generateWithChatGPT() {
+      const title = document.getElementById("title").value;
+      const designer = document.getElementById("designer").value;
+      const material = document.getElementById("material").value;
+      const gemstones = document.getElementById("gemstones").value;
+      const seo = document.getElementById("seo").value;
+      const tone = document.getElementById("tone").value;
+
+      const prompt = `You are a jewelry copywriter for Athena Gaia. Use the tone: ${tone}.
+Generate a poetic yet informative product description using the following info:
+- Title: ${title}
+- Designer: ${designer}
+- Material: ${material}
+- Gemstones: ${gemstones}
+- SEO Keyword: ${seo}
+Tone must follow Athena Gaia’s style: blend Greek culture, mythology, history, and elegant storytelling.`;
+
+      const apiKey = "YOUR_OPENAI_API_KEY"; // Replace this before deploying securely
+
+      try {
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4",
+            messages: [
+              { role: "system", content: "You are a jewelry copywriter." },
+              { role: "user", content: prompt },
+            ],
+            temperature: 0.7,
+          })
+        });
+
+        const data = await response.json();
+        document.getElementById("output").innerText = data.choices[0].message.content;
+      } catch (err) {
+        document.getElementById("output").innerText = "Error generating description. Check your API key or connection.";
+      }
+    }
+  </script>
+</body>
+</html>
